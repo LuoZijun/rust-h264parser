@@ -1,0 +1,9 @@
+[package]
+name = "h264parser"
+version = "0.1.0"
+authors = ["luozijun <luozijun.assistant@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+byteorder = { version = "1.2", features = [ "std", "i128" ] }
+
