@@ -1,6 +1,8 @@
-#![feature(try_from, conservative_impl_trait)]
+#![feature(try_from)]
+#![allow(unused_imports)]
 
 extern crate byteorder;
+
 
 use byteorder::{NetworkEndian, ReadBytesExt};
 
