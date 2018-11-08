@@ -221,8 +221,7 @@ impl Into<u8> for NaluHeader {
         let forbidden_zero_bit: u8 = 0;
         let nal_ref_idc: u8 = self.nal_ref_idc.into();
         let nal_unit_type: u8 = self.nal_unit_type.into();
-
-        forbidden_zero_bit | nal_ref_idc | nal_unit_type
+        forbidden_zero_bit | (nal_ref_idc << 5) | nal_unit_type
     }
 }
 
