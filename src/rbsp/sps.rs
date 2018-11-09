@@ -1,9 +1,5 @@
-// ue(v)：无符号整数指数哥伦布码编码的语法元素，左位在先。
-// se(v)：有符号整数指数哥伦布码编码的语法元素，左位在先。
-// u(n)：n位无符号整数。在语法表中，如果n是‘v’，其比特数由其它语法元素值确定。解析过程由函
-// 数read_bits(n)的返回值规定，该返回值用最高有效位在前的二进制表示。
 
-
+// SPS
 #[derive(Debug, Clone, Copy)]
 pub struct SequenceParameterSetFlag(u8);
 

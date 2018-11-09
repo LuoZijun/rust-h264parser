@@ -226,7 +226,7 @@ impl Into<u8> for NaluHeader {
 }
 
 #[derive(Clone)]
-pub struct Nalu<RBSP: RawByteSequencePayload> {
+pub struct Nalu<RBSP: RawByteSequencePayload + 'static> {
     header: NaluHeader,
     payload: RBSP,
 }

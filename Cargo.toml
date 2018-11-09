@@ -6,4 +6,6 @@ edition = "2018"
 
 [dependencies]
 byteorder = { version = "1.2", features = [ "std", "i128" ] }
-bitreader = "0.3.1"
+# bitreader = "0.3.1"
+bit-vec = "0.5"
+bitstream-io = "0.8"
