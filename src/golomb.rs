@@ -11,27 +11,8 @@ use crate::bitstream_io::{ BitReader, BitWriter, Endianness, BigEndian };
 
 use std::io::{ Read, Write };
 
-
-#[derive(Debug)]
-pub struct H264BitReader<R: Read> {
-    reader: R,
-    byte: u8,
-    position: usize,
-
-}
-
-impl<R: Read> H264BitReader<R> {
-    pub fn read_bit(&mut self) -> Result<bool, ()> {
-        unimplemented!()
-    }
-
-}
-
-#[derive(Debug)]
-pub struct H264BitWriter<W: Write> {
-    writer: W,
-}
-
+// H264 字节流中的 指数哥伦布编码的 `K` 阶 为 `0` .
+const K: usize = 0;
 
 pub fn encode<W: Write, E: Endianness>(num: u8, out: &mut BitWriter<W, E>) -> usize {
     let t1 = num + 1; // num >> K
@@ -46,10 +27,8 @@ pub fn encode<W: Write, E: Endianness>(num: u8, out: &mut BitWriter<W, E>) -> us
     v
 }
 
-
 pub fn decode<R: Read, E: Endianness>(input: &mut BitReader<R, E>, out: &mut u8) -> usize {
     // CodeLen: 2M + k + 1
-    const K: usize = 0;
     let mut m = 0usize;
 
     let mut bits = BitVec::new();
@@ -105,7 +84,7 @@ mod test {
     use crate::bitstream_io::{ BitReader, BitWriter, Endianness, BigEndian };
 
     use super::{encode, decode};
-    
+
     use std::io::{Read, Cursor};
 
     #[test]
