@@ -14,19 +14,20 @@ pub enum State {
 
 
 #[derive(Debug)]
-pub struct AnnexBReader<R: Read, RBSP: RawByteSequencePayload> {
+pub struct AnnexBReader<R: Read> {
     reader: R,
-    phantom: PhantomData<RBSP>,
 }
 
-impl<R: Read, RBSP: RawByteSequencePayload> AnnexBReader<R, RBSP> {
+impl<R: Read> AnnexBReader<R> {
     pub fn new(reader: R) -> Self {
-        Self { reader, phantom: PhantomData }
+        Self {
+            reader: reader,
+        }
     }
 }
 
-impl<R: Read, RBSP: RawByteSequencePayload> Iterator for AnnexBReader<R, RBSP> {
-    type Item = Result<Nalu<RBSP>, Error>;
+impl<R: Read> Iterator for AnnexBReader<R> {
+    type Item = Result<Nalu, Error>;
 
     fn next(&mut self) -> Option<Self::Item> {
         unimplemented!()
@@ -35,19 +36,20 @@ impl<R: Read, RBSP: RawByteSequencePayload> Iterator for AnnexBReader<R, RBSP> {
 
 
 #[derive(Debug)]
-pub struct AVCReader<R: Read, RBSP: RawByteSequencePayload> {
+pub struct AVCReader<R: Read> {
     reader: R,
-    phantom: PhantomData<RBSP>,
 }
 
-impl<R: Read, RBSP: RawByteSequencePayload> AVCReader<R, RBSP> {
+impl<R: Read> AVCReader<R> {
     pub fn new(reader: R) -> Self {
-        Self { reader, phantom: PhantomData }
+        Self {
+            reader: reader,
+        }
     }
 }
 
-impl<R: Read, RBSP: RawByteSequencePayload> Iterator for AVCReader<R, RBSP> {
-    type Item = Result<Nalu<RBSP>, Error>;
+impl<R: Read> Iterator for AVCReader<R> {
+    type Item = Result<Nalu, Error>;
 
     fn next(&mut self) -> Option<Self::Item> {
         unimplemented!()

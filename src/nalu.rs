@@ -225,15 +225,18 @@ impl Into<u8> for NaluHeader {
     }
 }
 
-#[derive(Clone)]
-pub struct Nalu<RBSP: RawByteSequencePayload + 'static> {
+
+pub struct Nalu {
     header: NaluHeader,
-    payload: RBSP,
+    payload: Box<dyn RawByteSequencePayload>,
 }
 
-impl<RBSP: RawByteSequencePayload> Nalu<RBSP> {
-    pub fn new(header: NaluHeader, payload: RBSP) -> Self {
-        Self { header, payload }
+impl Nalu {
+    pub fn new(header: NaluHeader, payload: impl RawByteSequencePayload + 'static) -> Self {
+        Self {
+            header: header,
+            payload: Box::new(payload)
+        }
     }
 
     pub fn ref_idc(&self) -> NaluRefIdc {
@@ -244,16 +247,20 @@ impl<RBSP: RawByteSequencePayload> Nalu<RBSP> {
         self.header.nal_unit_type
     }
 
-    pub fn payload(&self) -> &RBSP {
+    pub fn payload(&self) -> &Box<dyn RawByteSequencePayload> {
         &self.payload
     }
 
-    pub fn payload_mut(&mut self) -> &mut RBSP {
+    pub fn payload_mut(&mut self) -> &mut Box<dyn RawByteSequencePayload> {
         &mut self.payload
+    }
+
+    pub fn downcast_ref<T: 'static>(&self) -> &T {
+        &self.payload.as_any().downcast_ref::<T>().unwrap()
     }
 }
 
-impl<RBSP: RawByteSequencePayload> fmt::Debug for Nalu<RBSP> {
+impl fmt::Debug for Nalu {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Nalu {{ ref_idc: {:?}, kind: {:?}, payload: {:?} }}",
             self.ref_idc(),

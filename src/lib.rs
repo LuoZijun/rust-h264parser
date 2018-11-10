@@ -1,10 +1,9 @@
-#![feature(try_from, associated_type_defaults)]
+#![feature(int_to_from_bytes, try_from, associated_type_defaults, impl_trait_in_bindings)]
 #![allow(unused_imports)]
 
 extern crate byteorder;
 extern crate bit_vec;
 extern crate bitstream_io;
-
 
 use byteorder::{ NetworkEndian, ReadBytesExt };
 
