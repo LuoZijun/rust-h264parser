@@ -225,7 +225,8 @@ impl Into<u8> for NaluHeader {
     }
 }
 
-
+// Syntax: 7.3.1 ( Page 64 )
+// Semantic: 7.4.1 ( Page 84 )
 pub struct Nalu {
     header: NaluHeader,
     payload: Box<dyn RawByteSequencePayload>,

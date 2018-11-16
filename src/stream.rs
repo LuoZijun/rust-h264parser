@@ -8,11 +8,9 @@ use std::io::ErrorKind;
 use std::marker::PhantomData;
 
 
-pub enum State {
-    Slice,
-}
-
-
+// Annex B: Byte stream format ( Page: 328 )
+// Syntax: B.1.1 ( Page 328 )
+// Semantic: B.1.2 ( Page 328 )
 #[derive(Debug)]
 pub struct AnnexBReader<R: Read> {
     reader: R,
