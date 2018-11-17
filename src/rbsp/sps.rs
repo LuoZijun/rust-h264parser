@@ -1,6 +1,92 @@
 
+use std::fmt;
+
+
+// A.2 Profiles ( Page 306 )
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Profile {
+    Baseline,
+    Main,
+    Extended,
+    High,
+    ProgressiveHigh,
+    ConstrainedHigh,
+    // A.2.5 High 10 profile (Page 309)
+    High10,
+    // A.2.5.1 Progressive High 10 profile
+    ProgressiveHigh10,
+    // A.2.6 High 4:2:2 profile ( page 310 )
+    High422,
+    // High 4:4:4 Predictive
+    High444Predictive,
+    // High 10 Intra
+    High10Intra,
+    // High 4:2:2 Intra
+    High422Intra,
+    // High 4:4:4 Intra profile
+    High444Intra,
+    // CAVLC 4:4:4 Intra profile
+    CAVLC444Intra,
+}
+
+
+// A.3 Levels ( 312 )
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Level {
+    L1,
+    L1B,
+    L1_1,
+    L1_2,
+    L1_3,
+    L2,
+    L2_1,
+    L2_2,
+    L3,
+    L3_1,
+    L3_2,
+    L4,
+    L4_1,
+    L4_2,
+    L5,
+    L5_1,
+    L5_2,
+    L6,
+    L6_1,
+    L6_2,
+}
+
+impl fmt::Display for Level {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        use self::Level::*;
+
+        match *self {
+            L1 => write!(f, "1"),
+            L1B => write!(f, "1b"),
+            L1_1 => write!(f, "1.1"),
+            L1_2 => write!(f, "1.2"),
+            L1_3 => write!(f, "1.3"),
+            L2 => write!(f, "2"),
+            L2_1 => write!(f, "2.1"),
+            L2_2 => write!(f, "2.2"),
+            L3 => write!(f, "3"),
+            L3_1 => write!(f, "3.1"),
+            L3_2 => write!(f, "3.2"),
+            L4 => write!(f, "4"),
+            L4_1 => write!(f, "4.1"),
+            L4_2 => write!(f, "4.2"),
+            L5 => write!(f, "5"),
+            L5_1 => write!(f, "5.1"),
+            L5_2 => write!(f, "5.2"),
+            L6 => write!(f, "6"),
+            L6_1 => write!(f, "6.1"),
+            L6_2 => write!(f, "6.2"),
+        }
+    }
+}
+
+
 // SPS
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct SequenceParameterSetFlag(u8);
 
 impl SequenceParameterSetFlag {
@@ -41,8 +127,11 @@ impl Into<u8> for SequenceParameterSetFlag {
     }
 }
 
-// Page 43
-// 7.3.2.1.1 Sequence parameter set data syntax
+
+// Syntax: 7.3.2.1.1 ( Page 64 )
+// Semantic: 7.4.2.1 ( Page 94 )
+// VUI syntax: Annex E ( Page 414 )
+// 
 // SPS
 #[derive(Debug, Clone)]
 pub struct SequenceParameterSet {
@@ -88,7 +177,7 @@ pub struct SequenceParameterSet {
 
     // TODO: 
     // vui_parameters()
-    
+
 }
 
 

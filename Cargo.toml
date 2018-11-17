@@ -5,6 +5,10 @@ authors = ["luozijun <luozijun.assistant@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+log = "0.4"
+env_logger = "0.5"
 byteorder = { version = "1.2", features = [ "std", "i128" ] }
 bit-vec = "0.5"
 bitstream-io = "0.8"
+
+

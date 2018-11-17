@@ -1,6 +1,11 @@
-use crate::rbsp::RawByteSequencePayload;
+
+use crate::bitstream_io::{ BitReader, Endianness, };
+use crate::rbsp::{ self, RawByteSequencePayload };
+use crate::error::Error;
+
 
 use std::fmt;
+use std::io::{ self, Read, };
 use std::convert::TryFrom;
 
 
@@ -50,7 +55,7 @@ pub enum NaluKind {
 }
 
 impl TryFrom<u8> for NaluKind {
-    type Error = ();
+    type Error = Error;
 
     fn try_from(value: u8) -> Result<Self, Self::Error> {
         match value {
@@ -77,7 +82,7 @@ impl TryFrom<u8> for NaluKind {
             21 => Ok(NaluKind::CodedSliceExtensionForADepthViewComponentOrA3DAVCTextureViewComponent),
             n @ 22 ... 23 => Ok(NaluKind::Reserved(n)),
             n @ 24 ... 31 => Ok(NaluKind::Unspecified(n)),
-            _ => Err(()),
+            _ => Err(io::Error::new(io::ErrorKind::InvalidData, "malformed input data").into()),
         }
     }
 }
@@ -154,12 +159,12 @@ pub struct NaluHeader {
 }
 
 impl NaluHeader {
-    pub fn new(nal_ref_idc: NaluRefIdc, nalu_kind: NaluKind) -> Result<Self, ()> {
+    pub fn new(nal_ref_idc: NaluRefIdc, nalu_kind: NaluKind) -> Result<Self, Error> {
         match nalu_kind {
             NaluKind::CodedSliceIdr => {
                 // nal_ref_idc shall not be equal to 0 for NAL units with nal_unit_type equal to 5.
                 if nal_ref_idc == NaluRefIdc::DISPOSABLE {
-                    return Err(());
+                    return Err(io::Error::new(io::ErrorKind::InvalidData, "malformed input data").into());
                 }
             },
             NaluKind::SupplementalEnhancementInformation
@@ -169,7 +174,7 @@ impl NaluHeader {
             | NaluKind::FillerData => {
                 // nal_ref_idc shall be equal to 0 for all NAL units having nal_unit_type equal to 6, 9, 10, 11, or 12.
                 if nal_ref_idc != NaluRefIdc::DISPOSABLE {
-                    return Err(());
+                    return Err(io::Error::new(io::ErrorKind::InvalidData, "malformed input data").into());
                 }
             },
             _ => { }
@@ -195,7 +200,7 @@ impl NaluHeader {
 }
 
 impl TryFrom<u8> for NaluHeader {
-    type Error = ();
+    type Error = Error;
 
     fn try_from(value: u8) -> Result<Self, Self::Error> {
         let forbidden_zero_bit = value >> 7;
@@ -203,7 +208,7 @@ impl TryFrom<u8> for NaluHeader {
         let nal_unit_type = value & 0b00011111;
 
         if forbidden_zero_bit != 0 {
-            return Err(());
+            return Err(io::Error::new(io::ErrorKind::InvalidData, "malformed input data").into());
         }
 
         if let Ok(ref_idc) = NaluRefIdc::try_from(nal_ref_idc) {
@@ -211,8 +216,8 @@ impl TryFrom<u8> for NaluHeader {
                 return NaluHeader::new(ref_idc, kind)
             }
         }
-        
-        return Err(())
+
+        return Err(io::Error::new(io::ErrorKind::InvalidData, "malformed input data").into())
     }
 }
 
@@ -230,6 +235,7 @@ impl Into<u8> for NaluHeader {
 pub struct Nalu {
     header: NaluHeader,
     payload: Box<dyn RawByteSequencePayload>,
+    // payload: Vec<u8>,
 }
 
 impl Nalu {
@@ -256,8 +262,32 @@ impl Nalu {
         &mut self.payload
     }
 
-    pub fn downcast_ref<T: 'static>(&self) -> &T {
+    pub fn payload_downcast_ref<T: 'static>(&self) -> &T {
         &self.payload.as_any().downcast_ref::<T>().unwrap()
+    }
+}
+
+impl TryFrom<&[u8]> for Nalu {
+    type Error = Error;
+
+    fn try_from(value: &[u8]) -> Result<Self, Self::Error> {
+        let malformed_input_data: Error = io::Error::new(io::ErrorKind::InvalidData, "malformed input data").into();
+
+        if value.len() == 0 {
+            error!("输入数据长度不足于解析 NALU ！");
+            return Err(malformed_input_data);
+        }
+
+        debug!("parse nal unit header ...");
+        let header = NaluHeader::try_from(value[0])?;
+        
+        debug!("parse nal unit payload ...");
+        let payload = rbsp::DebugRbSp::try_from(&value[1..])?;
+
+        Ok(Nalu {
+            header: header,
+            payload: Box::new(payload),
+        })
     }
 }
 
