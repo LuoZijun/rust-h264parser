@@ -293,9 +293,9 @@ impl TryFrom<&[u8]> for Nalu {
 
 impl fmt::Debug for Nalu {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Nalu {{ ref_idc: {:?}, kind: {:?}, payload: {:?} }}",
-            self.ref_idc(),
-            self.kind(),
+        write!(f, "Nalu {{ ref_idc: {:10}, kind: {:69}, payload: {:?} }}",
+            format!("{:?}", self.ref_idc()),
+            format!("{:?}", self.kind()),
             self.payload())
     }
 }

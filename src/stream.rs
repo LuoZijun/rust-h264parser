@@ -52,6 +52,10 @@ impl<R: Read> StreamReader<R> {
     }
 
     pub fn next_annex_b_nalu(&mut self) -> Result<Nalu, error::Error> {
+        if self.buffer.len() > 0 {
+            self.buffer.clear();
+        }
+        
         let malformed_input_data = io::Error::new(io::ErrorKind::InvalidData, "malformed input data").into();
         
         debug!("parse nal unit prefix zeros ...");
@@ -108,7 +112,22 @@ impl<R: Read> StreamReader<R> {
     }
 
     pub fn next_avcc_nalu(&mut self) -> Result<Nalu, error::Error> {
-        unimplemented!()
+        debug!("parse nal unit prefix zeros ...");
+
+        let mut size_buffer = [0u8; 4];
+        self.stream.read_exact(&mut size_buffer)?;
+
+        let size = u32::from_be_bytes(size_buffer) as usize;
+
+        if self.buffer.len() > 0 {
+            self.buffer.clear();
+        }
+
+        self.buffer.resize(size, 0u8);
+
+        self.stream.read_exact(&mut self.buffer).unwrap();
+
+        Nalu::try_from(&self.buffer[..])
     }
 }
 

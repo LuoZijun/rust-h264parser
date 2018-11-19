@@ -1,4 +1,4 @@
-#![feature(int_to_from_bytes, try_from, associated_type_defaults, impl_trait_in_bindings)]
+#![feature(int_to_from_bytes, try_from)]
 #![allow(unused_imports, dead_code)]
 
 #[macro_use]
